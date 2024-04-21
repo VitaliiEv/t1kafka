@@ -6,12 +6,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
+@NamedEntityGraph(name = "HealthRecord.base",
+		attributeNodes = {
+				@NamedAttributeNode("service"), @NamedAttributeNode("details")
+		}
+)
 public class HealthRecord {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -33,7 +38,7 @@ public class HealthRecord {
 	@Column(nullable = false, length = 32)
 	private String status;
 
-	@ElementCollection
-	private List<String> details;
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Map<String, String> details;
 
 }

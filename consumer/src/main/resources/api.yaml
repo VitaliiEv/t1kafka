@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: Metrics API
+  description: Metrics API
+  version: 0.0.1
+servers:
+  - url: 'http://localhost:8081/api/v1'
+    description: Development server
+
+tags:
+  - name: Metrics
+    description: Получение метрик
+
+paths:
+
+  /metrics:
+    get:
+      tags:
+        - Metrics
+      description: Получение списка метрик
+      operationId: metrics
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecordDtos'
+    parameters:
+      - name: page
+        in: query
+        description: Номер страницы
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: service
+        in: query
+        description: Имя сервиса
+        required: false
+        schema:
+          type: string
+      - name: component
+        in: query
+        description: Имя компонента
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Сататус
+        required: false
+        schema:
+          type: string
+
+  /metrics/{id}:
+    get:
+      tags:
+        - Metrics
+      description: Получить статистику по id
+      operationId: metric
+      parameters:
+        - name: id
+          in: path
+          description: ИД
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecordDto'
+
+
+components:
+  schemas:
+    HealthRecordDtos:
+      type: array
+      description: Статусы компонентов
+      items:
+        $ref: '#/components/schemas/HealthRecordDto'
+
+    HealthRecordDto:
+      type: object
+      description: Статус компонента
+      properties:
+        id:
+          type: string
+          format: uuid
+        service:
+          $ref: '#/components/schemas/ServiceDto'
+        component:
+          type: string
+          description: Наименование метода
+        status:
+          type: string
+          description: Статус
+        createdAt:
+          type: string
+          format: date-time
+          description: Метка времени
+        details:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - service
+        - component
+        - status
+    ServiceDto:
+      type: object
+      description: Сервис
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Имя сервиса
+      required:
+        - id
+        - name

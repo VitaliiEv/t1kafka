@@ -13,10 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
@@ -72,13 +73,13 @@ public class HealthRecordServiceImpl implements HealthRecordService {
 	}
 
 	private void addDetails(HealthRecord parent, Map<String, Object> components) {
-		List<String> details = components.values().stream()
-				.map(Objects::toString)
-				.toList();
+		Map<String, String> details = components.entrySet()
+				.stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString()));
 		if (parent.getDetails() == null) {
-			parent.setDetails(new ArrayList<>());
+			parent.setDetails(new HashMap<>());
 		}
-		parent.getDetails().addAll(details);
+		parent.getDetails().putAll(details);
 	}
 
 	private List<HealthRecord> fromCompositeHealth(String name, CompositeHealthDto compositeHealth,
